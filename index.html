@@ -58,7 +58,28 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+        <p id="new-record-msg" class="new-record hidden">¡Nuevo récord!</p>
+
+        <form id="name-form" class="name-form hidden" autocomplete="off">
+          <label for="player-name">Tu nombre</label>
+          <div class="name-row">
+            <input id="player-name" type="text" maxlength="12" placeholder="JUGADOR" />
+            <button type="submit" id="save-name-btn">Guardar</button>
+          </div>
+        </form>
+
+        <section id="records" class="records hidden">
+          <span class="label">MEJORES PUNTUACIONES</span>
+          <ol id="records-list" class="records-list"></ol>
+          <div class="records-stats">
+            <div><span class="label">MEJOR COMBO</span><span id="best-combo" class="stat">0</span></div>
+            <div><span class="label">LÍNEAS MÁX.</span><span id="max-lines" class="stat">0</span></div>
+          </div>
+        </section>
+
         <button id="restart-btn" class="menu-btn">Reiniciar</button>
+        <button id="reset-records-btn" class="link-btn hidden" type="button">Borrar récords</button>
+
 
         <div id="pause-menu" class="pause-menu hidden">
           <button id="resume-btn" class="menu-btn">Reanudar</button>
@@ -72,6 +93,7 @@
             <li><span><kbd>Space</kbd></span> caída rápida</li>
             <li><span><kbd>P</kbd> / <kbd>Esc</kbd></span> pausa</li>
             <li><span><kbd>T</kbd></span> tema</li>
+            <li><span><kbd>K</kbd></span> skin</li>
           </ul>
 
           <label class="start-level">
