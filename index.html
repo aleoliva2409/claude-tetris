@@ -41,18 +41,42 @@
             <li><kbd>↑</kbd> rotar</li>
             <li><kbd>↓</kbd> bajar</li>
             <li><kbd>Space</kbd> caída</li>
-            <li><kbd>P</kbd> pausa</li>
+            <li><kbd>P</kbd><kbd>Esc</kbd> pausa</li>
             <li><kbd>T</kbd> tema</li>
           </ul>
         </div>
       </aside>
     </div>
 
-    <div id="overlay" class="overlay hidden">
+    <div id="overlay" class="overlay hidden" data-mode="gameover">
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
-        <button id="restart-btn">Reiniciar</button>
+
+        <div class="menu">
+          <button id="resume-btn" class="menu-btn primary pause-only">Reanudar</button>
+          <button id="restart-btn" class="menu-btn">Reiniciar</button>
+          <button id="controls-btn" class="menu-btn pause-only" aria-expanded="false" aria-controls="menu-controls">Ver controles</button>
+
+          <ul id="menu-controls" class="menu-controls pause-only" hidden>
+            <li><span><kbd>←</kbd><kbd>→</kbd></span> mover</li>
+            <li><span><kbd>↑</kbd><kbd>X</kbd></span> rotar</li>
+            <li><span><kbd>↓</kbd></span> bajar</li>
+            <li><span><kbd>Space</kbd></span> caída rápida</li>
+            <li><span><kbd>P</kbd><kbd>Esc</kbd></span> pausa / reanudar</li>
+            <li><span><kbd>T</kbd></span> cambiar tema</li>
+          </ul>
+
+          <div class="level-picker">
+            <span class="label">NIVEL INICIAL</span>
+            <div class="level-stepper">
+              <button id="level-down" class="step-btn" aria-label="Bajar nivel inicial">−</button>
+              <span id="start-level" class="value" aria-live="polite">1</span>
+              <button id="level-up" class="step-btn" aria-label="Subir nivel inicial">+</button>
+            </div>
+            <span class="level-hint">se aplica en la próxima partida</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
