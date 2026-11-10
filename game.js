@@ -39,9 +39,23 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
+const pauseMenu = document.getElementById('pause-menu');
+const resumeBtn = document.getElementById('resume-btn');
+const pauseRestartBtn = document.getElementById('pause-restart-btn');
+const controlsBtn = document.getElementById('controls-btn');
+const pauseControls = document.getElementById('pause-controls');
+const startLevelSelect = document.getElementById('start-level');
+
+const MAX_START_LEVEL = 15;
 
 let gridColor = '#22222e';
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+let startLevel = 1; // nivel con el que empieza la próxima partida
+
+// Teclas físicamente pulsadas, y las que se ignoran hasta soltarse
+// (evita movimientos accidentales al cerrar el menú con una tecla mantenida).
+const keysDown = new Set();
+let suppressedKeys = new Set();
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -107,10 +121,14 @@ function clearLines() {
   if (cleared) {
     lines += cleared;
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
-    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    level = startLevel + Math.floor(lines / 10);
+    dropInterval = intervalForLevel(level);
     updateHUD();
   }
+}
+
+function intervalForLevel(lvl) {
+  return Math.max(100, 1000 - (lvl - 1) * 90);
 }
 
 function ghostY() {
@@ -224,21 +242,52 @@ function endGame() {
   cancelAnimationFrame(animId);
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
+  pauseMenu.classList.add('hidden');
+  restartBtn.classList.remove('hidden');
   overlay.classList.remove('hidden');
 }
 
+function pauseGame() {
+  if (paused || gameOver) return;
+  paused = true;
+  cancelAnimationFrame(animId);
+  overlayTitle.textContent = 'PAUSA';
+  overlayScore.textContent = '';
+  restartBtn.classList.add('hidden');
+  setControlsVisible(false);
+  pauseMenu.classList.remove('hidden');
+  overlay.classList.remove('hidden');
+  resumeBtn.focus();
+}
+
+function resumeGame() {
+  if (!paused || gameOver) return;
+  paused = false;
+  overlay.classList.add('hidden');
+  pauseMenu.classList.add('hidden');
+  // Quita el foco de los botones del menú: si no, Space/Enter los volvería a activar.
+  if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  // Las teclas que siguen pulsadas al volver no deben mover la pieza hasta soltarse.
+  suppressedKeys = new Set(keysDown);
+  lastTime = performance.now();
+  loop(lastTime);
+}
+
 function togglePause() {
-  if (gameOver) return;
-  paused = !paused;
-  if (!paused) {
-    lastTime = performance.now();
-    loop(lastTime);
-  } else {
-    cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
-  }
+  if (paused) resumeGame();
+  else pauseGame();
+}
+
+function setControlsVisible(visible) {
+  pauseControls.classList.toggle('hidden', !visible);
+  controlsBtn.textContent = visible ? 'Ocultar controles' : 'Ver controles';
+  controlsBtn.setAttribute('aria-expanded', String(visible));
+}
+
+function restartGame() {
+  if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  suppressedKeys = new Set(keysDown);
+  init();
 }
 
 function loop(ts) {
@@ -272,24 +321,47 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  level = startLevel;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = intervalForLevel(level);
   dropAccum = 0;
   lastTime = performance.now();
   next = randomPiece();
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  pauseMenu.classList.add('hidden');
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
 
+const GAME_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', 'KeyX', 'Space']);
+
+document.addEventListener('keyup', e => {
+  keysDown.delete(e.code);
+  suppressedKeys.delete(e.code);
+});
+
+// Al perder el foco de la ventana no llegan los keyup: limpia el estado.
+window.addEventListener('blur', () => {
+  keysDown.clear();
+  suppressedKeys.clear();
+});
+
 document.addEventListener('keydown', e => {
+  keysDown.add(e.code);
   if (e.code === 'KeyT') { toggleTheme(); return; }
-  if (e.code === 'KeyP') { togglePause(); return; }
+  if (e.code === 'KeyP' || e.code === 'Escape') {
+    if (!e.repeat) togglePause();
+    return;
+  }
+  // Menú abierto o partida terminada: los controles del juego no hacen nada.
+  // Space/flechas sí pueden manejar el menú (botones y selector), así que no se bloquean aquí.
   if (paused || gameOver) return;
+  if (!GAME_KEYS.has(e.code)) return;
+  if (e.code === 'Space') e.preventDefault();
+  if (suppressedKeys.has(e.code)) return;
   switch (e.code) {
     case 'ArrowLeft':
       if (!collide(current.shape, current.x - 1, current.y)) current.x--;
@@ -305,13 +377,28 @@ document.addEventListener('keydown', e => {
       tryRotate();
       break;
     case 'Space':
-      e.preventDefault();
       hardDrop();
       break;
   }
   updateHUD();
 });
 
-restartBtn.addEventListener('click', init);
+for (let lvl = 1; lvl <= MAX_START_LEVEL; lvl++) {
+  const opt = document.createElement('option');
+  opt.value = String(lvl);
+  opt.textContent = `Nivel ${lvl}`;
+  startLevelSelect.appendChild(opt);
+}
+startLevelSelect.value = String(startLevel);
+startLevelSelect.addEventListener('change', () => {
+  startLevel = Number(startLevelSelect.value);
+});
+
+restartBtn.addEventListener('click', restartGame);
+pauseRestartBtn.addEventListener('click', restartGame);
+resumeBtn.addEventListener('click', resumeGame);
+controlsBtn.addEventListener('click', () => {
+  setControlsVisible(pauseControls.classList.contains('hidden'));
+});
 
 init();
