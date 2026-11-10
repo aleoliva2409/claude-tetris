@@ -33,5 +33,15 @@ Key conventions:
 ## Gotchas
 
 - `COLS`, `ROWS` and `BLOCK` in `game.js` must match the `<canvas id="board">` `width` and `height` in `index.html` (`COLS*BLOCK × ROWS*BLOCK`).
-- `game.js` looks up DOM elements by id when it loads (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`). Renaming an id in the HTML breaks the script.
-- The PAUSE and GAME OVER states share one overlay. Its text is set in `togglePause()` and `endGame()`.
+- `game.js` looks up DOM elements by id when it loads (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, plus the records ids `records`, `records-body`, `records-table`, `records-empty`, `records-stats`, `name-form`, `name-input`, `save-record-btn`, `clear-records-btn`, `play-btn`). Renaming an id in the HTML breaks the script.
+- The START, PAUSE and GAME OVER states share one overlay. Its text is set in `showStartScreen()`, `togglePause()` and `endGame()`. The records block (`#records`) is shown only on start and game over; `init()` hides it via `hideRecordsUI()`, so the pause overlay never shows it.
+- The page boots into `showStartScreen()`, not `init()`. Until "Jugar"/Enter, `onStartScreen` is true and `board`/`current` are undefined, so the keydown handler routes to `handleStartScreenKey()` and `toggleTheme()` only calls `draw()` when `current` exists.
+- The keydown handler ignores events whose target is an input/textarea (`isTypingTarget`) so typing a record name never triggers game keys.
+
+## Records and combo
+
+All of this code lives in the `// ---- Records ----` section at the end of `game.js`.
+
+- **Storage**: `localStorage['tetris-records']` holds a JSON array of at most 5 `{name, score, lines, level, combo, date}` entries, sorted by score descending. Every access is wrapped in try/catch. `loadRecords()` validates and sanitizes the data and falls back to `[]`.
+- **Combo**: `clearLines()` returns the number of cleared lines, and `lockPiece()` passes it to `updateCombo()`. `combo` counts consecutive locks that clear at least one line, and `maxCombo` (reset in `init()`) is stored with the record.
+- **Game over**: `endGame()` calls `showGameOverRecords()`. If `score > 0` and it beats the 5th entry (or there are fewer than 5), a name input appears. An empty name is stored as "Anónimo". Names are rendered with `textContent`, never `innerHTML`.

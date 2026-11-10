@@ -42,6 +42,13 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Sistema de puntuación** clásico de Tetris (100 / 300 / 500 / 800 multiplicado por nivel).
 - **Niveles** que aumentan cada 10 líneas y aceleran la caída.
 - **Pausa** y **Game Over** con opción de reinicio.
+- **Pantalla de inicio**: la partida no empieza hasta pulsar **Jugar** o `Enter`.
+- **Tabla de records local** (top 5 en `localStorage`, clave `tetris-records`):
+  - Al terminar la partida, si tu puntuación entra en el top 5, puedes escribir tu nombre (máx. 12 caracteres; vacío = "Anónimo") y guardarlo con **Guardar** o `Enter`.
+  - La tabla aparece en la pantalla de inicio y en la de Game Over, con la nueva entrada resaltada.
+  - Columnas: posición, nombre, puntos, líneas y combo. Debajo se muestran el **mejor combo** y las **líneas máximas** de los records guardados.
+  - El **combo** cuenta las piezas fijadas seguidas que eliminan al menos una línea.
+  - El botón **Borrar records** elimina la tabla (pide confirmación).
 
 ---
 
@@ -86,6 +93,7 @@ Después abre `http://localhost:8000` en el navegador.
 | `Espacio` | Hard drop (caída instantánea)     |
 | `P`       | Pausar / reanudar                 |
 | `T`       | Alternar tema claro / oscuro      |
+| `Enter`   | Empezar (en la pantalla de inicio) / guardar nombre del récord |
 
 ---
 
@@ -99,7 +107,7 @@ Define la estructura visual:
 
 - Un `<canvas id="board">` de **300 × 600** píxeles donde se renderiza el tablero.
 - Un panel lateral con `SCORE`, `LINES`, `LEVEL`, vista de la siguiente pieza y la lista de controles.
-- Un overlay para los estados **PAUSA** y **GAME OVER**.
+- Un overlay para los estados **INICIO**, **PAUSA** y **GAME OVER**, que incluye la tabla de records y el campo de nombre.
 
 ### 2. `style.css`
 
@@ -122,6 +130,8 @@ Contiene toda la lógica del juego. A grandes rasgos:
 ### Flujo del juego
 
 ```
+showStartScreen()                   → overlay con tabla de records y botón Jugar
+  ↓ (Jugar / Enter)
 init()
   ├─ createBoard()                  → matriz vacía
   ├─ next = randomPiece()
