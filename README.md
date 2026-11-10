@@ -44,6 +44,13 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Menú de pausa** (`P` o `Esc`): reanudar, reiniciar, ver controles y elegir el **nivel inicial** de la próxima partida.
 - **Game Over** con opción de reinicio.
 - **Skins visuales** seleccionables (Retro, Neón, Pastel y Pixel art) desde el panel o con la tecla `K`; la preferencia se guarda en `localStorage`.
+- **Pantalla de inicio**: la partida no empieza hasta pulsar **Jugar** o `Enter`.
+- **Tabla de records local** (top 5 en `localStorage`, clave `tetris-records`):
+  - Al terminar la partida, si tu puntuación entra en el top 5, puedes escribir tu nombre (máx. 12 caracteres; vacío = "Anónimo") y guardarlo con **Guardar** o `Enter`.
+  - La tabla aparece en la pantalla de inicio y en la de Game Over, con la nueva entrada resaltada.
+  - Columnas: posición, nombre, puntos, líneas y combo. Debajo se muestran el **mejor combo** y las **líneas máximas** de los records guardados.
+  - El **combo** cuenta las piezas fijadas seguidas que eliminan al menos una línea.
+  - El botón **Borrar records** elimina la tabla (pide confirmación).
 
 ---
 
@@ -89,6 +96,7 @@ Después abre `http://localhost:8000` en el navegador.
 | `P` / `Esc` | Abrir / cerrar el menú de pausa |
 | `T`       | Alternar tema claro / oscuro      |
 | `K`       | Cambiar de skin visual            |
+| `Enter`   | Empezar (en la pantalla de inicio) / guardar nombre del récord |
 
 ---
 
@@ -102,7 +110,7 @@ Define la estructura visual:
 
 - Un `<canvas id="board">` de **300 × 600** píxeles donde se renderiza el tablero.
 - Un panel lateral con `SCORE`, `LINES`, `LEVEL`, vista de la siguiente pieza y la lista de controles.
-- Un overlay para los estados **PAUSA** y **GAME OVER**.
+- Un overlay para los estados **INICIO**, **PAUSA** y **GAME OVER**, que incluye la tabla de records y el campo de nombre.
 
 ### 2. `style.css`
 
@@ -126,6 +134,8 @@ Contiene toda la lógica del juego. A grandes rasgos:
 ### Flujo del juego
 
 ```
+showStartScreen()                   → overlay con tabla de records y botón Jugar
+  ↓ (Jugar / Enter)
 init()
   ├─ createBoard()                  → matriz vacía
   ├─ next = randomPiece()
