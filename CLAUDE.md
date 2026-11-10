@@ -34,5 +34,5 @@ Key conventions:
 ## Gotchas
 
 - `COLS`, `ROWS` and `BLOCK` in `game.js` must match the `<canvas id="board">` `width` and `height` in `index.html` (`COLS*BLOCK × ROWS*BLOCK`).
-- `game.js` looks up DOM elements by id when it loads (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `resume-btn`, `controls-btn`, `menu-controls`, `level-down`, `level-up`, `start-level`). Renaming an id in the HTML breaks the script.
-- The PAUSE and GAME OVER states share one overlay. Its text is set in `pause()` and `endGame()`, and `showOverlay(mode)` sets `data-mode="pause"|"gameover"`. Elements with class `pause-only` are hidden in game-over mode by CSS.
+- `game.js` looks up DOM elements by id when it loads (`board`, `next-canvas`, `score`, `lines`, `level`, `overlay`, `overlay-title`, `overlay-score`, `restart-btn`, `resume-btn`, `controls-btn`, `menu-controls`, `level-down`, `level-up`, `start-level`, `name-form`, `name-label`, `name-input`, `records`, `records-body`, `best-combo`, `max-lines`, `reset-records-btn`, `skin-select`). Renaming an id in the HTML breaks the script.
+- The start screen, PAUSE and GAME OVER share one overlay. `showOverlay(mode)` (`"start"|"pause"|"gameover"`) sets the title/score text and `data-mode`. Elements with class `pause-only` are hidden by CSS outside pause mode; the records table and name form are shown only in start/game-over.

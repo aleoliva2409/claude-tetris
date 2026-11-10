@@ -132,6 +132,26 @@ body {
   border-radius: 4px;
 }
 
+/* ---- Selector de skin ---- */
+#skin-select {
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* La skin Neon siempre juega sobre negro, también con el tema claro */
+:root[data-skin="neon"] #board,
+:root[data-skin="neon"] #next-canvas {
+  background: #000;
+  border-color: #0f2a3a;
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+}
+
 /* ---- Controles ---- */
 .controls ul {
   list-style: none;
