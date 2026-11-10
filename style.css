@@ -20,6 +20,9 @@
   --menu-btn-bg: #22223a;
   --menu-btn-hover: #2e2e4a;
   --menu-btn-text: #e0e0e0;
+  --select-bg: #22223a;
+  --select-border: #3a3a5a;
+  --select-text: #e0e0e0;
 }
 
 :root[data-theme="light"] {
@@ -44,6 +47,9 @@
   --menu-btn-bg: #e8eaf2;
   --menu-btn-hover: #d8dbe8;
   --menu-btn-text: #1c1c28;
+  --select-bg: #e8eaf2;
+  --select-border: #b8bccd;
+  --select-text: #1c1c28;
 }
 
 *, *::before, *::after {
@@ -132,6 +138,22 @@ body {
   border: 1px solid var(--border);
   background: var(--board-bg);
   border-radius: 4px;
+}
+
+/* ---- Skins ---- */
+.skin-select {
+  background: var(--select-bg);
+  color: var(--select-text);
+  border: 1px solid var(--select-border);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.skin-select:focus-visible {
+  outline: 1px solid var(--value);
 }
 
 /* ---- Controles ---- */
