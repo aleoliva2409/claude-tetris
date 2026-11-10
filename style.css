@@ -17,6 +17,8 @@
   --btn-text: #0f0f17;
   --shadow: rgba(0, 0, 0, 0.6);
   --title-shadow: rgba(0, 0, 0, 0.5);
+  --row-highlight: rgba(122, 162, 247, 0.18);
+  --input-bg: #1a1a25;
 }
 
 :root[data-theme="light"] {
@@ -38,6 +40,8 @@
   --btn-text: #ffffff;
   --shadow: rgba(40, 40, 70, 0.2);
   --title-shadow: rgba(0, 0, 0, 0.15);
+  --row-highlight: rgba(61, 89, 161, 0.15);
+  --input-bg: #ffffff;
 }
 
 *, *::before, *::after {
@@ -207,4 +211,130 @@ kbd {
 
 #restart-btn:hover {
   background: var(--btn-hover);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---- Nombre para el récord ---- */
+.name-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+#name-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--value);
+}
+
+.name-row {
+  display: flex;
+  gap: 6px;
+}
+
+#name-input {
+  width: 140px;
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+#name-input:focus {
+  outline: 2px solid var(--value);
+  outline-offset: -1px;
+}
+
+.name-form button {
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ---- Tabla de récords ---- */
+.records {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.records-table {
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 240px;
+}
+
+.records-table th {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--label);
+  font-weight: 600;
+  padding: 2px 8px;
+}
+
+.records-table td {
+  padding: 4px 8px;
+  color: var(--muted);
+}
+
+.records-table td:nth-child(n + 3) {
+  font-family: 'Courier New', Courier, monospace;
+  text-align: right;
+}
+
+.records-table td:nth-child(2) {
+  text-align: left;
+  color: var(--text);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.records-table tr.highlight td {
+  background: var(--row-highlight);
+  color: var(--value);
+  font-weight: 700;
+}
+
+.records-table .empty {
+  text-align: center;
+  font-style: italic;
+}
+
+.records-extra {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.records-extra strong {
+  color: var(--value);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--label);
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-btn:hover {
+  color: var(--danger);
 }
