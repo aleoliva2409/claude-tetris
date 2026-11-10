@@ -40,6 +40,7 @@ const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 
+let gridColor = '#22222e';
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
 function createBoard() {
@@ -169,7 +170,7 @@ function drawBlock(context, x, y, colorIndex, size, alpha) {
 }
 
 function drawGrid() {
-  ctx.strokeStyle = '#22222e';
+  ctx.strokeStyle = gridColor;
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
@@ -256,6 +257,14 @@ function loop(ts) {
   animId = requestAnimationFrame(loop);
 }
 
+function toggleTheme() {
+  const root = document.documentElement;
+  if (root.dataset.theme === 'light') delete root.dataset.theme;
+  else root.dataset.theme = 'light';
+  gridColor = getComputedStyle(root).getPropertyValue('--grid').trim();
+  draw(); // repinta aunque el loop esté detenido (pausa o game over)
+}
+
 function init() {
   board = createBoard();
   score = 0;
@@ -275,6 +284,7 @@ function init() {
 }
 
 document.addEventListener('keydown', e => {
+  if (e.code === 'KeyT') { toggleTheme(); return; }
   if (e.code === 'KeyP') { togglePause(); return; }
   if (paused || gameOver) return;
   switch (e.code) {
